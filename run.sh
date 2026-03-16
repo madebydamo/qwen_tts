@@ -1,15 +1,15 @@
 #!/bin/bash
 set -e
 
-if [ $# -lt 2 ]; then
-	echo "Usage: ./run.sh <ref_audio> 'Your sentence here' [optional ref_text]"
+if [ $# -lt 1 ]; then
+	echo "Usage: ./run.sh --text 'Your sentence here' [--ref-audio REF] [--ref-text TEXT] [--language LANG] [--name NAME]"
 	exit 1
 fi
 
 # Detect if running inside Docker container
 if [ -f /.dockerenv ]; then
 	# Inside container: execute the generation
-	python generate.py "$1" "$2" "${3:-}"
+	python generate.py "$@"
 else
 	# On host: build if necessary and run in Docker
 	echo "Running via Docker container..."
@@ -20,5 +20,6 @@ else
 		docker compose build
 	fi
 
-	docker compose run --remove-orphans qwen-tts ./run.sh "$1" "$2" "${3:-}"
+	docker compose run --remove-orphans qwen-tts ./run.sh "$@"
+
 fi
