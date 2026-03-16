@@ -13,7 +13,7 @@ RUN groupadd -g 1000 user && useradd -u 1000 -g 1000 -m user
 # Install Python packages
 RUN pip install --no-cache-dir qwen-tts soundfile torch huggingface_hub[cli]
 
-# Optional: Install flash-attention for better performance (uncomment if GPU available)
+# Optional: Install flash-attention for better performance (requires CUDA, uncomment if GPU available)
 # RUN pip install flash-attn --no-build-isolation
 
 WORKDIR /app
