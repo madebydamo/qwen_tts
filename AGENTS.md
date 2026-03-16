@@ -8,13 +8,13 @@ This file contains guidelines and conventions for agents working on this Qwen3 T
 
 **Generate audio from text with voice cloning:**
 ```bash
-python generate.py <ref_audio_file> "Your text here" [optional_ref_text]
-# Example: python generate.py heyjessi.mp3 "Hello world"
+./run.sh --text "Your text here" [--ref-audio trump.mp3] [--ref-text "ref"] [--language en] [--name custom]
+# Example: ./run.sh --text "Hello world" --ref-audio trump.mp3
 ```
 
-**Run via shell script:**
+**Python CLI:**
 ```bash
-./run.sh <ref_audio_file> "Your text here" [optional_ref_text]
+python generate.py --text "Your sentence here" --ref-audio trump.mp3
 ```
 
 **Download models:**
@@ -24,10 +24,9 @@ python generate.py <ref_audio_file> "Your text here" [optional_ref_text]
 
 **Run with Docker:**
 ```bash
-docker-compose up
-# Or build and run manually:
-docker build -t qwen-tts .
-docker run -v $(pwd):/app qwen-tts bash
+docker compose up
+# Or:
+docker compose run --rm qwen-tts ./run.sh --text "Hello world"
 ```
 
 ### Testing
@@ -39,8 +38,8 @@ docker run -v $(pwd):/app qwen-tts bash
 - Verify output audio file is created and playable
 
 **Model loading tests:**
-- Test local model loading vs HuggingFace download
-- Test different model variants (Base, CustomVoice, VoiceDesign)
+- Test local model loading vs HuggingFace download (cached in /app/models/)
+- Test with different reference audio files
 
 ### Linting and Code Quality
 
@@ -98,13 +97,11 @@ from qwen_tts import Qwen3TTSModel
 
 **Example:**
 ```python
-def main():
-    if len(sys.argv) < 3:
-        print(
-            "Usage: python generate.py <ref_audio> 'Your sentence here' "
-            "[optional ref_text]"
-        )
-        sys.exit(1)
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--text", required=True)
+    parser.add_argument("--ref-audio", default="trump.mp3")
+    args = parser.parse_args()
 ```
 
 ### Naming Conventions
@@ -247,13 +244,13 @@ model = Qwen3TTSModel.from_pretrained(
 ├── download.sh           # Model download script
 ├── Dockerfile            # Container definition
 ├── docker-compose.yml    # Container orchestration
+├── README.md             # Usage documentation
 └── AGENTS.md             # This file
 ```
 
 **Model file organization:**
 - Keep downloaded models in `models/` directory
 - Use consistent naming: `Qwen3-TTS-{freq}-{size}-{variant}`
-- Separate Base, CustomVoice, and VoiceDesign models
 
 ### Docker and Containerization
 
