@@ -1,22 +1,22 @@
 FROM python:3.12-slim
 
-# Install system dependencies
+ARG UID=1000
+ARG GID=1000
+
 RUN apt-get update && apt-get install -y \
     git \
     build-essential \
     sox \
     && rm -rf /var/lib/apt/lists/*
 
-# Create user with uid 1000
-RUN groupadd -g 1000 user && useradd -u 1000 -g 1000 -m user
+RUN groupadd -g ${GID} appuser || true && useradd -u ${UID} -g ${GID} -m -s /bin/bash appuser || true
 
-# Install Python packages
+RUN mkdir -p /app/models && chown -R appuser:appuser /app
+
 RUN pip install --no-cache-dir qwen-tts soundfile torch huggingface_hub[cli]
-
-# Optional: Install flash-attention for better performance (requires CUDA, uncomment if GPU available)
-# RUN pip install flash-attn --no-build-isolation
 
 WORKDIR /app
 
-# Default command
+USER appuser
+
 CMD ["bash"]

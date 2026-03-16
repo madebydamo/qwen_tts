@@ -11,15 +11,12 @@ if [ -f /.dockerenv ]; then
 	# Inside container: execute the generation
 	python generate.py "$@"
 else
-	# On host: build if necessary and run in Docker
 	echo "Running via Docker container..."
-
-	# Build image if it doesn't exist
-	if ! docker image inspect damotts-qwen-tts >/dev/null 2>&1; then
+	if ! docker image inspect qwen3-tts >/dev/null 2>&1; then
 		echo "Docker image not found. Building (this may take a minute)..."
 		docker compose build
 	fi
 
-	docker compose run --remove-orphans qwen-tts ./run.sh "$@"
+	docker compose run --remove-orphans -e UID -e GID qwen-tts ./run.sh "$@"
 
 fi

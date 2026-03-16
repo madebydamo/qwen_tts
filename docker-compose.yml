@@ -1,18 +1,13 @@
-version: "3.8"
-
 services:
   qwen-tts:
-    build: .
-    user: "1000:100"
-    # Uncomment the following line if you have GPU support
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: 1
-    #           capabilities: [gpu]
+    image: qwen3-tts
+    build:
+      context: .
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+    user: "${UID:-1000}:${GID:-1000}"
     volumes:
-      - .:/app # Mount current directory to /app
+      - .:/app
     stdin_open: true
     tty: true
